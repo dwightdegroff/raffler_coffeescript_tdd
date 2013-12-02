@@ -1,0 +1,8 @@
+describe 'Raffler application', ->
+
+  it 'has a raffler object', ->
+    expect(window.Raffler).toBeDefined()
+
+  it 'has a raffler.Routers object', ->
+    expect(window.Raffler.Routers).toBeDefined()
+

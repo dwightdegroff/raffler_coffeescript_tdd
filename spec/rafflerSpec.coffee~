@@ -1,0 +1,118 @@
+describe 'Raffler application', ->
+
+  it 'has a raffler object', ->
+    expect(window.Raffler).toBeDefined()
+
+  it 'has a raffler.Models', ->
+    expect(window.Raffler.Models).toBeDefined()
+  it 'has a raffler.Collections', ->
+    expect(window.Raffler.Collections).toBeDefined()
+
+  it 'has a raffler.Routers', ->
+    expect(window.Raffler.Routers).toBeDefined()
+
+  it 'has a raffler.Views', ->
+    expect(window.Raffler.Views).toBeDefined()
+
+  describe 'Model', ->
+    model = new window.Raffler.Models.Entry
+     
+    it 'should have a defined Raffler model', ->
+      expect(model).toBeDefined()
+
+    it 'can set a name', ->
+      model.set(name:"test")
+      expect(model.get("name")).toEqual("test")
+
+    it 'defaults to not being a winner', ->
+      expect(model.get("winner")).toEqual(false)
+
+    it 'can set winner to true', ->
+      model.set(winner:true)
+      expect(model.get("winner")).toEqual(true)  
+
+    it 'can set winner back to false', ->
+      model.set(winner:false)
+      expect(model.get("winner")).toEqual(false) 
+  
+    
+  describe 'Collection', ->
+    
+    collection = new window.Raffler.Collections.Entries
+
+    it 'should be defined', ->
+      expect(collection).toBeDefined()
+
+    it 'starts with no entries', ->
+      expect(collection.length).toEqual(0)
+
+    it 'can create entries', ->
+      currLength = collection.length
+      collection.create name: "test"
+      expect(collection.length).toEqual(currLength+1)
+
+    it 'can find entries that are not winners', ->
+      item = collection.find (model) ->
+        model.get("winner") is false
+      expect(item.get("name")).toEqual("test")
+
+    it 'can find entries that are winners', ->
+      collection.create name: "test winner", winner:true
+      item = collection.find (model) ->
+        model.get("winner") is true
+      expect(item.get("name")).toEqual("test winner")
+
+    it 'should have no entries after reset', ->
+      collection.create name: "test three"
+      collection.reset()
+      expect(collection.length).toEqual(0)    
+
+  describe 'Router', ->
+    entries = null
+    beforeEach ->
+      entries = new window.Raffler.Routers.Entries
+
+    it 'should have a collection of entries', ->
+      expect(entries.collection).toBeDefined()
+
+    it 'should provide a default route to index', ->
+      expect(entries.routes['']).toEqual('index')
+
+    it 'should provide a route to show information on a specific entry', ->
+      expect(entries.routes['entries/:id']).toEqual('show')
+
+  describe 'View', ->
+
+    view = null
+    entries = null
+
+    beforeEach ->
+      entries = new window.Raffler.Routers.Entries
+      view = new window.Raffler.Views.EntriesIndex(collection: entries.collection)
+
+    it 'can be generated', ->
+      expect(view).toBeDefined()
+
+    it 'can reset all winners', ->
+      view.resetWinner()
+      item=view.collection.find (model) ->
+        model.get("winner") is true
+      expect(item).toBeUndefined()
+
+    it 'can draw a winner', ->
+      #view.collection.create name: "draw test"
+      view.drawWinner()
+      item=view.collection.find (model) ->
+        model.get("winner") is true
+      expect(item.get("name")).toEqual("draw test")
+      
+
+
+
+        
+      
+
+
+
+
+
